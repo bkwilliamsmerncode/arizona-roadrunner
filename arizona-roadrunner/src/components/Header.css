@@ -1,0 +1,416 @@
+/* =========================================================
+   ARIZONA ROADRUNNER
+   Header
+   ========================================================= */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+
+  width: 100%;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgb(21 16 13 / 0.96),
+      rgb(36 24 18 / 0.94)
+    );
+
+  border-bottom:
+    1px solid rgb(255 255 255 / 0.08);
+
+  color: var(--color-white);
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* =========================================================
+   Header Container
+   ========================================================= */
+
+.header-container {
+  width: min(
+    100% - (var(--page-padding) * 2),
+    var(--container-xl)
+  );
+
+  min-height: 72px;
+
+  margin-inline: auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: var(--space-4);
+}
+
+/* =========================================================
+   Brand
+   ========================================================= */
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+
+  gap: var(--space-3);
+
+  min-width: 0;
+
+  color: var(--color-white);
+
+  transition:
+    transform var(--transition-base),
+    opacity var(--transition-base);
+}
+
+.brand:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+.brand-icon {
+  display: grid;
+  place-items: center;
+
+  width: 42px;
+  height: 42px;
+
+  flex-shrink: 0;
+
+  border-radius: var(--radius-full);
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--color-roadrunner),
+      var(--color-sunset)
+    );
+
+  box-shadow:
+    0 0 24px rgb(201 111 50 / 0.25);
+
+  font-size: 1.25rem;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+
+  font-family: var(--font-display);
+
+  font-weight: 800;
+
+  line-height: 0.9;
+
+  letter-spacing: -0.04em;
+}
+
+.brand-name {
+  font-size: 1rem;
+}
+
+.brand-name--accent {
+  color: var(--color-sand);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* =========================================================
+   Desktop Navigation
+   ========================================================= */
+
+.desktop-navigation {
+  display: none;
+}
+
+/* =========================================================
+   Header Actions
+   ========================================================= */
+
+.header-actions {
+  display: flex;
+  align-items: center;
+
+  gap: var(--space-2);
+}
+
+/* =========================================================
+   Cart
+   ========================================================= */
+
+.cart-button {
+  position: relative;
+
+  display: grid;
+  place-items: center;
+
+  width: 44px;
+  height: 44px;
+
+  border: 0;
+  border-radius: var(--radius-full);
+
+  background: transparent;
+
+  color: var(--color-white);
+
+  font-size: 1.15rem;
+
+  transition:
+    background-color var(--transition-base),
+    transform var(--transition-base);
+}
+
+.cart-button:hover {
+  background: rgb(255 255 255 / 0.08);
+  transform: translateY(-2px);
+}
+
+.cart-count {
+  position: absolute;
+
+  top: 1px;
+  right: 0;
+
+  display: grid;
+  place-items: center;
+
+  min-width: 18px;
+  height: 18px;
+
+  padding-inline: 4px;
+
+  border-radius: var(--radius-full);
+
+  background: var(--color-roadrunner);
+
+  color: var(--color-white);
+
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+
+/* =========================================================
+   Mobile Menu Button
+   ========================================================= */
+
+.menu-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  gap: 5px;
+
+  width: 44px;
+  height: 44px;
+
+  padding: 10px;
+
+  border: 0;
+  border-radius: var(--radius-md);
+
+  background: transparent;
+
+  transition:
+    background-color var(--transition-base);
+}
+
+.menu-button:hover {
+  background: rgb(255 255 255 / 0.08);
+}
+
+.menu-button span {
+  display: block;
+
+  width: 100%;
+  height: 2px;
+
+  border-radius: var(--radius-full);
+
+  background: var(--color-white);
+
+  transform-origin: center;
+
+  transition:
+    transform var(--transition-base),
+    opacity var(--transition-base);
+}
+
+/* =========================================================
+   Animated Hamburger → X
+   ========================================================= */
+
+.menu-button--open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.menu-button--open span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-button--open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* =========================================================
+   Mobile Navigation
+   ========================================================= */
+
+.mobile-navigation {
+  display: grid;
+
+  grid-template-rows: 0fr;
+
+  overflow: hidden;
+
+  padding-inline: var(--page-padding);
+
+  background: rgb(21 16 13 / 0.98);
+
+  transition:
+    grid-template-rows var(--transition-slow),
+    padding-block var(--transition-slow);
+}
+
+.mobile-navigation > * {
+  min-height: 0;
+
+  opacity: 0;
+
+  transform: translateY(-8px);
+
+  transition:
+    opacity var(--transition-base),
+    transform var(--transition-base);
+}
+
+.mobile-navigation--open {
+  grid-template-rows: 1fr;
+
+  padding-block: var(--space-4) var(--space-6);
+}
+
+.mobile-navigation--open > * {
+  opacity: 1;
+
+  transform: translateY(0);
+}
+
+.mobile-navigation a {
+  padding-block: var(--space-3);
+
+  border-bottom:
+    1px solid rgb(255 255 255 / 0.08);
+
+  color: var(--color-sand-light);
+
+  font-weight: 700;
+
+  transition:
+    color var(--transition-fast),
+    padding-left var(--transition-fast);
+}
+
+.mobile-navigation a:last-child {
+  border-bottom: 0;
+}
+
+.mobile-navigation a:hover {
+  padding-left: var(--space-2);
+
+  color: var(--color-roadrunner-light);
+}
+
+/* =========================================================
+   Tablet
+   ========================================================= */
+
+@media (min-width: 640px) {
+  .brand-name {
+    font-size: 1.1rem;
+  }
+
+  .brand-name--accent {
+    font-size: 0.9rem;
+  }
+}
+
+/* =========================================================
+   Desktop
+   ========================================================= */
+
+@media (min-width: 900px) {
+  .header-container {
+    min-height: 82px;
+  }
+
+  .desktop-navigation {
+    display: flex;
+    align-items: center;
+
+    gap: clamp(
+      var(--space-4),
+      3vw,
+      var(--space-10)
+    );
+  }
+
+  .desktop-navigation a {
+    position: relative;
+
+    padding-block: var(--space-2);
+
+    color: var(--color-gray-200);
+
+    font-size: var(--text-sm);
+    font-weight: 700;
+
+    transition:
+      color var(--transition-base);
+  }
+
+  .desktop-navigation a::after {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+    height: 2px;
+
+    border-radius: var(--radius-full);
+
+    background: var(--color-roadrunner);
+
+    transform:
+      scaleX(0);
+
+    transform-origin: right;
+
+    transition:
+      transform var(--transition-base);
+  }
+
+  .desktop-navigation a:hover {
+    color: var(--color-white);
+  }
+
+  .desktop-navigation a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  .menu-button {
+    display: none;
+  }
+
+  .mobile-navigation {
+    display: none;
+  }
+}
