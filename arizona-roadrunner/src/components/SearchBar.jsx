@@ -1,59 +1,48 @@
+import { useEffect, useRef } from "react";
+import Icon from "./Icon";
 import "./SearchBar.css";
-
-function SearchBar({
+export default function SearchBar({
   searchTerm,
   onSearchChange,
   onClearSearch,
 }) {
-  const hasSearch = searchTerm.trim().length > 0;
-
+  const input = useRef(null);
+  useEffect(() => {
+    const handle = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        input.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handle);
+    return () => window.removeEventListener("keydown", handle);
+  }, []);
   return (
     <div className="search-bar">
-      <label
-        className="search-bar__label"
-        htmlFor="product-search"
-      >
+      <Icon name="search" />
+      <label className="sr-only" htmlFor="product-search">
         Search the collection
       </label>
-
-      <div className="search-bar__wrapper">
-        <span
-          className="search-bar__icon"
-          aria-hidden="true"
+      <input
+        ref={input}
+        id="product-search"
+        type="search"
+        value={searchTerm}
+        onChange={(e) => onSearchChange(e.target.value)}
+        placeholder="Find something that feels like you…"
+        autoComplete="off"
+      />
+      {searchTerm ? (
+        <button
+          className="icon-button"
+          onClick={onClearSearch}
+          aria-label="Clear search"
         >
-          ⌕
-        </span>
-
-        <input
-          id="product-search"
-          className="search-bar__input"
-          type="search"
-          value={searchTerm}
-          onChange={(event) => {
-            onSearchChange(event.target.value);
-          }}
-          placeholder="Search handmade treasures..."
-          autoComplete="off"
-        />
-
-        {hasSearch && (
-          <button
-            type="button"
-            className="search-bar__clear"
-            onClick={onClearSearch}
-            aria-label="Clear search"
-          >
-            ×
-          </button>
-        )}
-      </div>
-
-      <p className="search-bar__hint">
-        Search by name, category, material, description,
-        or tag.
-      </p>
+          <Icon name="close" />
+        </button>
+      ) : (
+        <kbd>Ctrl K</kbd>
+      )}
     </div>
   );
 }
-
-export default SearchBar;
