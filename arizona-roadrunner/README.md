@@ -1,8 +1,8 @@
 # Arizona Roadrunner
 
-A responsive React + Vite storefront with a Southwest editorial design. The existing components/data/hooks/styles hierarchy is preserved.
+Frontend-only React + Vite storefront. The existing components/data/hooks/styles hierarchy is preserved. The home page follows the supplied reference: cream navigation, dark purple gradient hero, oversized serif heading, full-width search, category tabs, and rounded product cards.
 
-## Run locally
+## Run
 
 From the repository root:
 
@@ -12,23 +12,69 @@ npm ci
 npm run dev
 ```
 
-Use Node 22.12+ (or another version supported by Vite 8). `npm run build` produces `dist`; `npm run preview` serves it; `npm run lint` checks source.
+Use Node 22.12+ or another Vite 8 supported version. `npm run build` creates `dist`; `npm run lint` checks source; `npm test` checks checkout trust boundaries. Relative asset paths and hash navigation support GitHub Pages repository subpaths.
 
-## Storefront
+## Browser experience
 
-- Hash navigation for the collection, story, and contact pages; works on static hosting and GitHub Pages without route rewrites.
-- Token-based catalog search across names, descriptions, categories, materials, and tags. Ctrl/Cmd+K focuses search on the collection.
-- Category, price, availability, saved-item filters, five sorting modes, and progressive loading.
-- Native accessible product and bag dialogs, keyboard focus management, Escape dismissal, and reduced-motion support.
-- Favorites and bag quantities persist in localStorage, with validated recovery from malformed data.
-- Contact form prepares an explicit email draft. Bag inquiry opens an email with itemized products and subtotal.
+- Search, categories, price/availability/favorites filters, sorting, progressive loading, and recently viewed products.
+- Cart, favorites, recently viewed items, contact drafts, and explicitly saved checkout details use validated localStorage. Cart and favorites update across tabs. Unavailable storage falls back to memory.
+- Checkout collects contact information and shipping or pickup preferences, then reviews item subtotals. Shipping/tax are not fabricated. Saving details does not place an order or claim payment.
+- Hooks are used for concrete behavior: useState, useReducer, useEffect, useRef, useMemo, useCallback, useContext, useId, useDeferredValue, useTransition, and useSyncExternalStore.
+- Native dialogs provide focus containment and Escape dismissal. Reduced-motion preferences are supported.
 
-## Before accepting real orders
+## EmailJS contact form
 
-There is no payment, inventory, shipping, tax, order-management, or email-delivery backend. The site does not claim to process orders. Connect a payment/order service and server-validated prices and inventory before enabling checkout. Contact messages require the visitor to send the email draft from their own email app.
+1. Copy `.env.example` to `.env.local` inside this nested app folder.
+2. Fill `VITE_EMAILJS_SERVICE_ID`, `VITE_EMAILJS_TEMPLATE_ID`, and `VITE_EMAILJS_PUBLIC_KEY` with this store's EmailJS configuration.
+3. In the EmailJS template, set **To Email** to the owner's real email address, not a browser-provided variable. Set **Reply To** to `{{reply_to}}`.
+4. Template variables: `{{from_name}}`, `{{reply_to}}`, `{{subject}}`, `{{message}}`, and `{{site_name}}`.
+5. Allowlist the production origin in EmailJS. Rebuild/redeploy after changing Vite environment values; restarting is needed in development.
 
-The 100-product dataset is retained from the original repository. Its illustrative Unsplash photography is bundled where available; clearly incorrect ceramic imagery was replaced with a pottery reference (Unsplash photo-1578749556568-bc2c40e68b61). Unavailable sculpture photos use a labeled fallback. Available reference photos are bundled as optimized WebP assets to avoid third-party image requests. Photos are illustrative and may not depict the named item; replace them with accurate owned product photos and verify prices, descriptions, stock, and the existing hello@arizonaroadrunner.com address before commercial launch. Failed images show an accessible fallback. Do not treat catalog stock flags as live inventory.
+Suggested subject: `Arizona Roadrunner — {{subject}}`.
 
-## Hosting
+The SDK sends directly from the browser. Success appears only after EmailJS accepts the request. Failed sends retain the draft. Missing configuration shows an honest unavailable message. No mailto substitution happens on submit. The existing direct email link remains available separately. Confirm that hello@arizonaroadrunner.com is the intended support address.
 
-Upload the contents of `dist` to your static host. Relative Vite asset paths and hash routes support repository subpaths. No deployment or Pages settings are changed by this redesign.
+Official reference: https://www.emailjs.com/docs/sdk/send-form/
+
+## Future Square connection
+
+Leave `VITE_CHECKOUT_ENDPOINT` empty until the hosted checkout integration exists. The current site remains entirely frontend-only and displays that Square checkout is coming soon. No Square access token belongs in this app or any VITE variable.
+
+The future HTTPS endpoint receives:
+
+```json
+{
+  "requestId": "stable-id-for-retries-of-the-same-payload",
+  "currency": "USD",
+  "items": [{ "productId": 1, "quantity": 2 }],
+  "customer": { "name": "Buyer", "email": "buyer@example.com", "phone": "" },
+  "fulfillment": {
+    "type": "shipping",
+    "shippingAddress": {
+      "addressLine1": "123 Example Street",
+      "addressLine2": "",
+      "city": "Tucson",
+      "region": "AZ",
+      "postalCode": "85701",
+      "country": "US"
+    }
+  },
+  "notes": ""
+}
+```
+
+For pickup, fulfillment contains only `type: "pickup"`. This is a requested preference; the shop must support and confirm it.
+
+The endpoint must look up trusted product prices/stock, validate quantities and delivery eligibility, determine tax/shipping, and use Square CreatePaymentLink with an itemized order. It returns `{ "checkoutUrl": "https://square.link/..." }`. The frontend validates the Square host before redirecting. Configure endpoint CORS for the storefront. A fixed payment link with an invented amount query parameter will not implement this cart flow.
+
+The owner's paid-order email must originate from a trusted Square-confirmed flow: validate Square webhook signatures, require the matching payment's COMPLETED status, retrieve the matching order and delivery details, and deduplicate payment/event IDs before sending the receipt notification. Include line items, quantities, paid amount/currency, order/payment references, and applicable shipping information. This can be a hosted third-party automation/service; it is not implemented by localStorage, EmailJS contact submissions, or a successful return URL.
+
+References:
+
+- https://developer.squareup.com/docs/checkout-api/square-order-checkout
+- https://developer.squareup.com/docs/checkout-api/optional-checkout-configurations
+- https://developer.squareup.com/docs/payments-api/webhooks
+
+## Catalog
+
+The existing 100 products are illustrative. Available reference photos are bundled as WebP; missing sculpture photos have a labeled fallback. Verify product images, prices, descriptions, availability, support address, and shipping/pickup policies before real sales. Browser state is convenience storage, not an authoritative inventory, account, or payment system.

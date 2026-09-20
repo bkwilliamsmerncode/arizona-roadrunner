@@ -40,7 +40,7 @@ export default function ProductCard({
           <ProductImage product={product} loading="lazy" />
         </button>
         {product.featured && (
-          <span className="product-card__badge">A special find</span>
+          <span className="product-card__badge">FEATURED</span>
         )}
         <button
           className={`icon-button favorite ${isFavorite ? "is-saved" : ""}`}
@@ -51,7 +51,7 @@ export default function ProductCard({
           <Icon name="heart" />
         </button>
         <button className="quick-view" onClick={() => onProductSelect(product)}>
-          Take a closer look <Icon name="arrow" />
+          {product.category}
         </button>
       </div>
       <div className="product-card__content">
@@ -66,9 +66,12 @@ export default function ProductCard({
         </div>
         <p>{product.description}</p>
         <div className="product-card__bottom">
-          <span className={product.inStock ? "available" : ""}>
-            {product.inStock ? "Available to add" : "Currently unavailable"}
-          </span>
+          <button
+            className="product-card__view"
+            onClick={() => onProductSelect(product)}
+          >
+            View Item <Icon name="arrow" />
+          </button>
           <button
             className="icon-button"
             onClick={() => onAdd(product)}

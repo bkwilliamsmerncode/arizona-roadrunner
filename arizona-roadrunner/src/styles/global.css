@@ -78,7 +78,7 @@ textarea:focus-visible {
   background: #eac8ac;
 }
 .wrap {
-  width: min(1440px, 90%);
+  width: min(1840px, 90%);
   margin: auto;
 }
 .eyebrow {

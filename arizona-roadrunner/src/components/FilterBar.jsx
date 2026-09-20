@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./FilterBar.css";
 export default function FilterBar({
   categories,
@@ -15,6 +16,7 @@ export default function FilterBar({
   onSavedChange,
   count,
 }) {
+  const [expanded, setExpanded] = useState(false);
   return (
     <div className="filters">
       <div className="category-tabs" aria-label="Product categories">
@@ -24,51 +26,34 @@ export default function FilterBar({
             aria-pressed={selectedCategory === c}
             onClick={() => onCategoryChange(c)}
           >
-            {c === "all" ? "All treasures" : c}
+            {c === "all" ? "All" : c}
           </button>
         ))}
       </div>
       <div className="filter-row">
         <p role="status">
-          <strong>{count}</strong> {count === 1 ? "treasure" : "treasures"} to
-          discover
+          <strong>
+            {count} {count === 1 ? "treasure" : "treasures"}
+          </strong>
         </p>
         <div className="filter-row__options">
+          <button
+            className="filters-toggle"
+            onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
+            aria-controls="extra-filters"
+          >
+            Filters {hasActiveFilters ? "•" : ""}{" "}
+            <span>{expanded ? "−" : "+"}</span>
+          </button>
           <label>
-            <input
-              type="checkbox"
-              checked={savedOnly}
-              onChange={(e) => onSavedChange(e.target.checked)}
-            />{" "}
-            Saved
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={inStockOnly}
-              onChange={(e) => onStockChange(e.target.checked)}
-            />{" "}
-            Available
-          </label>
-          <label>
-            <span className="sr-only">Price range</span>
+            Sort{" "}
             <select
-              value={maxPrice}
-              onChange={(e) => onPriceChange(e.target.value)}
-            >
-              <option value="all">Any price</option>
-              <option value="25">$25 & under</option>
-              <option value="50">$50 & under</option>
-              <option value="100">$100 & under</option>
-            </select>
-          </label>
-          <label>
-            <span className="sr-only">Sort products</span>
-            <select
+              aria-label="Sort products"
               value={sortOption}
               onChange={(e) => onSortChange(e.target.value)}
             >
-              <option value="featured">Featured first</option>
+              <option value="featured">Featured</option>
               <option value="price-low">Price: low to high</option>
               <option value="price-high">Price: high to low</option>
               <option value="name-az">Name: A to Z</option>
@@ -81,6 +66,36 @@ export default function FilterBar({
             </button>
           )}
         </div>
+      </div>
+      <div id="extra-filters" hidden={!expanded} className="extra-filters">
+        <label>
+          <input
+            type="checkbox"
+            checked={savedOnly}
+            onChange={(e) => onSavedChange(e.target.checked)}
+          />{" "}
+          Saved favorites
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={inStockOnly}
+            onChange={(e) => onStockChange(e.target.checked)}
+          />{" "}
+          Available items
+        </label>
+        <label>
+          Price{" "}
+          <select
+            value={maxPrice}
+            onChange={(e) => onPriceChange(e.target.value)}
+          >
+            <option value="all">Any price</option>
+            <option value="25">$25 & under</option>
+            <option value="50">$50 & under</option>
+            <option value="100">$100 & under</option>
+          </select>
+        </label>
       </div>
     </div>
   );
