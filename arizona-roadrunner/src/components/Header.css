@@ -1,58 +1,48 @@
-.announcement {
-  background: #344b40;
-  color: #fff;
-  text-align: center;
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  padding: 9px 5%;
-}
-.announcement span {
-  float: right;
-  color: #d0dbd2;
-}
 .header {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: #f7f5eff5;
-  border-bottom: 1px solid var(--line);
-  backdrop-filter: blur(12px);
+  background: #f1efeadf;
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid #dfdcd6;
 }
 .header__inner {
+  width: min(1640px, 80%);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  min-height: 96px;
+  gap: 42px;
+  min-height: 118px;
 }
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font: 22px/1 var(--serif);
-  letter-spacing: -0.7px;
-}
-.brand > .icon {
-  color: var(--clay);
-  width: 29px;
-  height: 29px;
-  fill: currentColor;
-  stroke: none;
+  gap: 23px;
+  font: 25px/0.94 var(--serif);
+  letter-spacing: -0.6px;
 }
 .brand strong {
   display: block;
+  color: #a15f3c;
   font-size: 28px;
+  letter-spacing: -0.5px;
 }
-.brand__dot {
-  color: var(--clay);
+.brand > .icon {
+  width: 19px;
+  height: 19px;
+  fill: #a15f3c;
+  stroke: none;
+  transform: rotate(-14deg);
 }
 .header nav {
+  margin-left: auto;
   display: flex;
-  gap: 34px;
-  font-size: 13px;
+  gap: 38px;
+  font-size: 17px;
+  font-weight: 600;
+  color: #5b5751;
 }
 .header nav a {
-  padding: 12px 0;
+  padding: 15px 0;
   position: relative;
 }
 .header nav a[aria-current],
@@ -62,71 +52,75 @@
 .header nav a[aria-current]:after {
   content: "";
   position: absolute;
-  height: 2px;
-  background: var(--clay);
-  bottom: 3px;
+  bottom: 5px;
   left: 0;
   right: 0;
-}
-.header__actions {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-}
-.header__actions .icon-button {
-  border: 0;
-  position: relative;
-}
-.header__actions .icon-button b {
-  position: absolute;
-  right: 0;
-  top: 0;
-  font-size: 10px;
+  height: 2px;
+  background: var(--clay);
 }
 .bag-button {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: none;
-  border: 0;
-  font-size: 13px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  border: 1px solid #dedbd4;
+  background: #faf9f6;
+  border-radius: 50%;
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
 }
 .bag-button b {
-  background: var(--ink);
+  position: absolute;
+  top: -3px;
+  right: -2px;
+  background: var(--clay);
   color: white;
-  border-radius: 50%;
-  min-width: 24px;
-  padding: 2px;
-  font-size: 11px;
+  border: 2px solid var(--paper);
+  border-radius: 30px;
+  font-size: 12px;
+  min-width: 20px;
+  line-height: 18px;
+  text-align: center;
+}
+.bag-button .icon {
+  width: 23px;
+  height: 23px;
 }
 @media (max-width: 750px) {
-  .announcement span {
-    display: none;
-  }
   .header__inner {
-    min-height: 78px;
+    width: 90%;
+    gap: 20px;
+    min-height: 86px;
     flex-wrap: wrap;
-    gap: 10px;
-    padding-top: 15px;
+    padding: 18px 0 8px;
   }
   .brand {
-    font-size: 17px;
+    font-size: 19px;
+    gap: 12px;
   }
   .brand strong {
-    font-size: 22px;
+    font-size: 23px;
   }
   .header nav {
     order: 3;
     width: 100%;
     justify-content: center;
-    gap: 30px;
+    gap: 35px;
+    font-size: 14px;
     border-top: 1px solid var(--line);
-    font-size: 12px;
+    padding-top: 4px;
   }
-  .header__actions {
-    gap: 8px;
+  .bag-button {
+    margin-left: auto;
+    width: 43px;
+    height: 43px;
   }
-  .bag-button > span {
-    display: none;
+  .header nav a {
+    padding: 8px 0;
+  }
+  .header nav a[aria-current]:after {
+    bottom: 0;
   }
 }
+.header .header__inner { width: min(1640px, 80%); }
+@media (max-width: 750px) { .header .header__inner { width: 90%; } }
