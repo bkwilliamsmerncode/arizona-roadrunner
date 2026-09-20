@@ -1,16 +1,34 @@
-# React + Vite
+# Arizona Roadrunner
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A responsive React + Vite storefront with a Southwest editorial design. The existing components/data/hooks/styles hierarchy is preserved.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+From the repository root:
 
-## React Compiler
+```sh
+cd arizona-roadrunner
+npm ci
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Use Node 22.12+ (or another version supported by Vite 8). `npm run build` produces `dist`; `npm run preview` serves it; `npm run lint` checks source.
 
-## Expanding the ESLint configuration
+## Storefront
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Hash navigation for the collection, story, and contact pages; works on static hosting and GitHub Pages without route rewrites.
+- Token-based catalog search across names, descriptions, categories, materials, and tags. Ctrl/Cmd+K focuses search on the collection.
+- Category, price, availability, saved-item filters, five sorting modes, and progressive loading.
+- Native accessible product and bag dialogs, keyboard focus management, Escape dismissal, and reduced-motion support.
+- Favorites and bag quantities persist in localStorage, with validated recovery from malformed data.
+- Contact form prepares an explicit email draft. Bag inquiry opens an email with itemized products and subtotal.
+
+## Before accepting real orders
+
+There is no payment, inventory, shipping, tax, order-management, or email-delivery backend. The site does not claim to process orders. Connect a payment/order service and server-validated prices and inventory before enabling checkout. Contact messages require the visitor to send the email draft from their own email app.
+
+The 100-product dataset and its Unsplash reference photography are retained from the original repository. Photos are illustrative and may not depict the named item; replace them with accurate owned product photos and verify prices, descriptions, stock, and the existing hello@arizonaroadrunner.com address before commercial launch. Failed images show an accessible fallback. Do not treat catalog stock flags as live inventory.
+
+## Hosting
+
+Upload the contents of `dist` to your static host. Relative Vite asset paths and hash routes support repository subpaths. No deployment or Pages settings are changed by this redesign.

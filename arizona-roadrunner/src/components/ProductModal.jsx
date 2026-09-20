@@ -1,195 +1,88 @@
-import { useEffect } from "react";
-
+import { useState } from "react";
+import useDialog from "../hooks/useDialog";
+import { ProductImage } from "./ProductCard";
+import Icon from "./Icon";
 import "./ProductModal.css";
-
-function ProductModal({
+export default function ProductModal({
   product,
   onClose,
+  onAdd,
+  onToggleFavorite,
+  isFavorite,
 }) {
-  useEffect(() => {
-    if (!product) {
-      return undefined;
-    }
-
-    const handleKeyDown = (event) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
-
-    const originalOverflow =
-      document.body.style.overflow;
-
-    document.body.style.overflow = "hidden";
-
-    window.addEventListener(
-      "keydown",
-      handleKeyDown
-    );
-
-    return () => {
-      document.body.style.overflow =
-        originalOverflow;
-
-      window.removeEventListener(
-        "keydown",
-        handleKeyDown
-      );
-    };
-  }, [product, onClose]);
-
-  if (!product) {
-    return null;
-  }
-
-  const {
-    name,
-    category,
-    price,
-    description,
-    image,
-    materials = [],
-    tags = [],
-    inStock = true,
-    paymentUrl = "#",
-  } = product;
-
-  const formattedPrice =
-    new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(price);
-
-  const handleBackdropClick = (
-    event
-  ) => {
-    if (
-      event.target === event.currentTarget
-    ) {
-      onClose();
-    }
-  };
-
+  const dialog = useDialog(Boolean(product), onClose);
+  const [quantity, setQuantity] = useState(1);
+  const [added, setAdded] = useState(false);
+  if (!product) return null;
   return (
-    <div
+    <dialog
+      {...dialog}
       className="product-modal"
-      role="presentation"
-      onMouseDown={handleBackdropClick}
+      aria-labelledby="product-modal-title"
     >
-      <div
-        className="product-modal__dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="product-modal-title"
+      <button
+        className="icon-button dialog-close"
+        onClick={onClose}
+        aria-label="Close product details"
       >
-        <button
-          type="button"
-          className="product-modal__close"
-          onClick={onClose}
-          aria-label="Close product details"
-        >
-          ×
-        </button>
-
-        <div className="product-modal__layout">
-          <div className="product-modal__image-wrapper">
-            <img
-              className="product-modal__image"
-              src={image}
-              alt={name}
-            />
-
-            <span className="product-modal__category">
-              {category}
+        <Icon name="close" />
+      </button>
+      <div className="product-modal__layout">
+        <div className="product-modal__image">
+          <ProductImage product={product} />
+        </div>
+        <div className="product-modal__content">
+          <span className="eyebrow">
+            {product.category} / Arizona Roadrunner
+          </span>
+          <h2 id="product-modal-title">{product.name}</h2>
+          <p className="product-modal__price">
+            ${product.price.toFixed(2)} <small>USD</small>
+          </p>
+          <p>{product.description}</p>
+          <div className="materials">
+            <h3>The details</h3>
+            <p>{product.materials.join(" · ")}</p>
+            <span>
+              {product.inStock
+                ? "Available to add to your bag"
+                : "Currently unavailable"}
             </span>
           </div>
-
-          <div className="product-modal__content">
-            <p className="product-modal__eyebrow">
-              Arizona Roadrunner
-            </p>
-
-            <h2
-              id="product-modal-title"
-              className="product-modal__title"
+          <label className="quantity-label">
+            Quantity
+            <select
+              value={quantity}
+              onChange={(e) => setQuantity(Number(e.target.value))}
             >
-              {name}
-            </h2>
-
-            <p className="product-modal__price">
-              {formattedPrice}
-            </p>
-
-            <div className="product-modal__divider" />
-
-            <p className="product-modal__description">
-              {description}
-            </p>
-
-            {materials.length > 0 && (
-              <div className="product-modal__section">
-                <h3>Materials</h3>
-
-                <div className="product-modal__materials">
-                  {materials.map(
-                    (material) => (
-                      <span
-                        key={material}
-                      >
-                        {material}
-                      </span>
-                    )
-                  )}
-                </div>
-              </div>
-            )}
-
-            {tags.length > 0 && (
-              <div className="product-modal__section">
-                <h3>Tags</h3>
-
-                <div className="product-modal__tags">
-                  {tags.map((tag) => (
-                    <span key={tag}>
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="product-modal__purchase">
-              {inStock ? (
-                <>
-                  <a
-                    className="product-modal__buy"
-                    href={paymentUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Buy This Item
-                    <span aria-hidden="true">
-                      ↗
-                    </span>
-                  </a>
-
-                  <p>
-                    You'll complete your purchase
-                    through our secure payment
-                    partner.
-                  </p>
-                </>
-              ) : (
-                <div className="product-modal__unavailable">
-                  Currently Unavailable
-                </div>
-              )}
-            </div>
-          </div>
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                <option key={n}>{n}</option>
+              ))}
+            </select>
+          </label>
+          <button
+            className="button add-button"
+            disabled={!product.inStock}
+            onClick={() => { onAdd(product, quantity); setAdded(true); }}
+          >
+            Add to bag — ${(product.price * quantity).toFixed(2)}{" "}
+            <Icon name="bag" />
+          </button>
+          {added && <p role="status" className="added-confirmation">Added to your bag. Close this window to keep exploring or open your bag from the header.</p>}
+          <button
+            className="save-link"
+            onClick={() => onToggleFavorite(product.id)}
+            aria-pressed={isFavorite}
+          >
+            <Icon name="heart" />
+            {isFavorite ? "Saved to your favorites" : "Save for another day"}
+          </button>
+          <p className="purchase-note">
+            Photography is illustrative. Contact us to confirm the exact piece,
+            availability, and delivery before purchasing.
+          </p>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }
-
-export default ProductModal;

@@ -21,9 +21,10 @@ function productMatchesSearch(product, searchTerm) {
     ...(product.tags ?? []),
   ];
 
-  return searchableFields.some((field) =>
-    normalize(field).includes(normalizedSearch)
-  );
+  const haystack = searchableFields.map(normalize).join(" ");
+  return normalizedSearch
+    .split(/\s+/)
+    .every((token) => haystack.includes(token));
 }
 
 function sortProducts(products, sortOption) {
@@ -31,31 +32,21 @@ function sortProducts(products, sortOption) {
 
   switch (sortOption) {
     case "price-low":
-      return sortedProducts.sort(
-        (a, b) => a.price - b.price
-      );
+      return sortedProducts.sort((a, b) => a.price - b.price);
 
     case "price-high":
-      return sortedProducts.sort(
-        (a, b) => b.price - a.price
-      );
+      return sortedProducts.sort((a, b) => b.price - a.price);
 
     case "name-az":
-      return sortedProducts.sort((a, b) =>
-        a.name.localeCompare(b.name)
-      );
+      return sortedProducts.sort((a, b) => a.name.localeCompare(b.name));
 
     case "name-za":
-      return sortedProducts.sort((a, b) =>
-        b.name.localeCompare(a.name)
-      );
+      return sortedProducts.sort((a, b) => b.name.localeCompare(a.name));
 
     case "featured":
     default:
       return sortedProducts.sort(
-        (a, b) =>
-          Number(b.featured) -
-          Number(a.featured)
+        (a, b) => Number(b.featured) - Number(a.featured),
       );
   }
 }
@@ -76,45 +67,23 @@ function useProductSearch({
       }
     }
 
-    return [...uniqueCategories].sort(
-      (a, b) => a.localeCompare(b)
-    );
+    return [...uniqueCategories].sort((a, b) => a.localeCompare(b));
   }, [products]);
 
   const filteredProducts = useMemo(() => {
     const filtered = products.filter((product) => {
-      const matchesSearch =
-        productMatchesSearch(
-          product,
-          searchTerm
-        );
+      const matchesSearch = productMatchesSearch(product, searchTerm);
 
       const matchesCategory =
-        selectedCategory === "all" ||
-        product.category === selectedCategory;
+        selectedCategory === "all" || product.category === selectedCategory;
 
-      const matchesStock =
-        !inStockOnly ||
-        product.inStock === true;
+      const matchesStock = !inStockOnly || product.inStock === true;
 
-      return (
-        matchesSearch &&
-        matchesCategory &&
-        matchesStock
-      );
+      return matchesSearch && matchesCategory && matchesStock;
     });
 
-    return sortProducts(
-      filtered,
-      sortOption
-    );
-  }, [
-    products,
-    searchTerm,
-    selectedCategory,
-    sortOption,
-    inStockOnly,
-  ]);
+    return sortProducts(filtered, sortOption);
+  }, [products, searchTerm, selectedCategory, sortOption, inStockOnly]);
 
   return {
     categories,

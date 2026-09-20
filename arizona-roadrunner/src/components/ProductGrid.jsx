@@ -1,36 +1,31 @@
 import ProductCard from "./ProductCard";
+import Icon from "./Icon";
 import "./ProductGrid.css";
-
-const ProductGrid = ({ products, onProductSelect }) => {
-  if (!products?.length) {
-    return (
-      <section className="product-grid-empty" aria-live="polite">
-        <div className="product-grid-empty__icon">🔎</div>
-
-        <h2>No treasures found</h2>
-
-        <p>
-          We couldn't find any handmade items matching your search.
-          Try another search term or category.
-        </p>
-      </section>
-    );
-  }
-
-  return (
-    <section
-      className="product-grid"
-      aria-label="Arizona Roadrunner handmade products"
-    >
+export default function ProductGrid({
+  products,
+  favorites,
+  onClear,
+  ...props
+}) {
+  return products.length ? (
+    <div className="product-grid">
       {products.map((product) => (
         <ProductCard
           key={product.id}
           product={product}
-          onProductSelect={onProductSelect}
+          isFavorite={favorites.includes(product.id)}
+          {...props}
         />
       ))}
-    </section>
+    </div>
+  ) : (
+    <div className="empty-state">
+      <Icon name="search" />
+      <h3>No treasures found. Yet.</h3>
+      <p>Try another search or give your filters a fresh start.</p>
+      <button className="button" onClick={onClear}>
+        Explore all treasures <Icon name="arrow" />
+      </button>
+    </div>
   );
-};
-
-export default ProductGrid;
+}
