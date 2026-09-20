@@ -65,8 +65,8 @@ export default function Hero({ page = "shop" }) {
           <div className="hero__orbit" />
           <figure className="hero__photo hero__photo--main">
             <img
-              src="https://images.unsplash.com/photo-1493106819501-66d381c466f1?auto=format&fit=crop&w=850&q=85"
-              alt="Earthy ceramic vessels and handmade pottery"
+              src={`${import.meta.env.BASE_URL}images/pottery.webp`}
+              alt="Blue ceramic plates and bowls on wooden shelves"
               fetchPriority="high"
             />
             <figcaption>
@@ -76,7 +76,7 @@ export default function Hero({ page = "shop" }) {
           </figure>
           <figure className="hero__photo hero__photo--small">
             <img
-              src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=450&q=85"
+              src={`${import.meta.env.BASE_URL}images/photo-1515562141207-7a88fb7ce338.webp`}
               alt="Delicate necklaces with individual character"
             />
             <figcaption>Small details. Big personality.</figcaption>

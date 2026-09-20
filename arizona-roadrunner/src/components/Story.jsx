@@ -34,7 +34,7 @@ export default function Story() {
       </section>
       <section className="story-photo wrap">
         <img
-          src="https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1600&q=85"
+          src={`${import.meta.env.BASE_URL}images/photo-1500534623283-312aade485b7.webp`}
           alt="A landscape filled with natural colors and open space"
           loading="lazy"
         />

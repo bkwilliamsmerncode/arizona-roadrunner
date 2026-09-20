@@ -52,6 +52,7 @@ export default function ProductModal({
           <label className="quantity-label">
             Quantity
             <select
+              aria-label="Quantity"
               value={quantity}
               onChange={(e) => setQuantity(Number(e.target.value))}
             >

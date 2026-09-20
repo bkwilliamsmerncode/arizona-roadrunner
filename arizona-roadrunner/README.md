@@ -27,7 +27,7 @@ Use Node 22.12+ (or another version supported by Vite 8). `npm run build` produc
 
 There is no payment, inventory, shipping, tax, order-management, or email-delivery backend. The site does not claim to process orders. Connect a payment/order service and server-validated prices and inventory before enabling checkout. Contact messages require the visitor to send the email draft from their own email app.
 
-The 100-product dataset and its Unsplash reference photography are retained from the original repository. Photos are illustrative and may not depict the named item; replace them with accurate owned product photos and verify prices, descriptions, stock, and the existing hello@arizonaroadrunner.com address before commercial launch. Failed images show an accessible fallback. Do not treat catalog stock flags as live inventory.
+The 100-product dataset is retained from the original repository. Its illustrative Unsplash photography is bundled where available; clearly incorrect ceramic imagery was replaced with a pottery reference (Unsplash photo-1578749556568-bc2c40e68b61). Unavailable sculpture photos use a labeled fallback. Available reference photos are bundled as optimized WebP assets to avoid third-party image requests. Photos are illustrative and may not depict the named item; replace them with accurate owned product photos and verify prices, descriptions, stock, and the existing hello@arizonaroadrunner.com address before commercial launch. Failed images show an accessible fallback. Do not treat catalog stock flags as live inventory.
 
 ## Hosting
 

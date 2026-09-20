@@ -2,7 +2,7 @@ import { useState } from "react";
 import Icon from "./Icon";
 import "./ProductCard.css";
 export function ProductImage({ product, ...props }) {
-  const [failed, setFailed] = useState(false);
+  const [failed, setFailed] = useState(!product.image);
   return failed ? (
     <div
       className="image-fallback"
