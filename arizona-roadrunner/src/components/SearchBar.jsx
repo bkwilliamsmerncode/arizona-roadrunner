@@ -29,7 +29,7 @@ export default function SearchBar({
         type="search"
         value={searchTerm}
         onChange={(e) => onSearchChange(e.target.value)}
-        placeholder="Find something that feels like you…"
+        placeholder="Search handmade treasures..."
         autoComplete="off"
       />
       {searchTerm ? (

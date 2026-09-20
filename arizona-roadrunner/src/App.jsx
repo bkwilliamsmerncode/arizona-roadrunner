@@ -1,4 +1,10 @@
-import { useEffect, useState } from "react";
+import {
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
 import products from "./data/products";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
@@ -11,7 +17,7 @@ import Story from "./components/Story";
 import Contact from "./components/Contact";
 import Icon from "./components/Icon";
 import useProductSearch from "./hooks/useProductSearch";
-import useStoredState from "./hooks/useStoredState";
+import useStorefront from "./hooks/useStorefront";
 import "./App.css";
 const route = () => {
   const hash = window.location.hash;
@@ -21,20 +27,6 @@ const route = () => {
       ? "contact"
       : "shop";
 };
-const validFavorites = (value) =>
-  Array.isArray(value) &&
-  value.every((id) => products.some((p) => p.id === id));
-const validBag = (value) =>
-  Array.isArray(value) &&
-  new Set(value.map((i) => i?.id)).size === value.length &&
-  value.every(
-    (i) =>
-      i &&
-      products.some((p) => p.id === i.id && p.inStock) &&
-      Number.isInteger(i.quantity) &&
-      i.quantity > 0 &&
-      i.quantity <= 99,
-  );
 export default function App() {
   const [page, setPage] = useState(route);
   const [searchTerm, setSearchTerm] = useState("");
@@ -45,11 +37,10 @@ export default function App() {
   const [savedOnly, setSavedOnly] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cartOpen, setCartOpen] = useState(false);
-  const [favorites, setFavorites] = useStoredState(
-    "ar-favorites-v1",
-    validFavorites,
-  );
-  const [bag, setBag] = useStoredState("ar-bag-v1", validBag);
+  const { favorites, recent, cartCount, addItem, toggleFavorite, viewProduct } =
+    useStorefront();
+  const [isFiltering, startFilterTransition] = useTransition();
+  const deferredSearch = useDeferredValue(searchTerm);
   const [notice, setNotice] = useState("");
   const [limit, setLimit] = useState(16);
   useEffect(() => {
@@ -71,16 +62,32 @@ export default function App() {
   }, [notice]);
   const { categories, filteredProducts } = useProductSearch({
     products,
-    searchTerm,
+    searchTerm: deferredSearch,
     selectedCategory,
     sortOption,
     inStockOnly,
   });
-  const results = filteredProducts.filter(
-    (p) =>
-      (maxPrice === "all" || p.price <= Number(maxPrice)) &&
-      (!savedOnly || favorites.includes(p.id)),
+  const results = useMemo(
+    () =>
+      filteredProducts.filter(
+        (p) =>
+          (maxPrice === "all" || p.price <= Number(maxPrice)) &&
+          (!savedOnly || favorites.includes(p.id)),
+      ),
+    [filteredProducts, maxPrice, savedOnly, favorites],
   );
+  const recentProducts = useMemo(
+    () =>
+      recent
+        .map((id) => products.find((p) => p.id === id))
+        .filter(Boolean)
+        .slice(0, 5),
+    [recent],
+  );
+  const selectProduct = (product) => {
+    viewProduct(product.id);
+    setSelectedProduct(product);
+  };
   const clearFilters = () => {
     setSearchTerm("");
     setSelectedCategory("all");
@@ -91,89 +98,42 @@ export default function App() {
     setLimit(16);
   };
   const change = (setter) => (value) => {
-    setter(value);
-    setLimit(16);
-  };
-  const toggleFavorite = (id) =>
-    setFavorites((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
-  function addToBag(product, quantity = 1) {
-    if (!product.inStock) return;
-    setBag((prev) => {
-      const existing = prev.find((i) => i.id === product.id);
-      return existing
-        ? prev.map((i) =>
-            i.id === product.id
-              ? { ...i, quantity: Math.min(99, i.quantity + quantity) }
-              : i,
-          )
-        : [...prev, { id: product.id, quantity }];
+    startFilterTransition(() => {
+      setter(value);
+      setLimit(16);
     });
+  };
+  function addToBag(product, quantity = 1) {
+    addItem(product, quantity);
     setNotice(`${product.name} added to your bag`);
   }
-  const items = bag.map((item) => ({
-    ...item,
-    product: products.find((p) => p.id === item.id),
-  }));
-  const showSaved = () => {
-    setSavedOnly(true);
-    setSearchTerm("");
-    setSelectedCategory("all");
-    setMaxPrice("all");
-    setInStockOnly(false);
-    setLimit(16);
-    if (page !== "shop") window.location.hash = "/shop";
-    setTimeout(
-      () =>
-        document
-          .getElementById("collection")
-          ?.scrollIntoView({ behavior: "smooth" }),
-      80,
-    );
-  };
   return (
     <>
       <Header
         page={page}
-        cartCount={bag.reduce((sum, i) => sum + i.quantity, 0)}
-        favoriteCount={favorites.length}
+        cartCount={cartCount}
         onCart={() => setCartOpen(true)}
-        onFavorites={showSaved}
       />
       <main id="main">
         <Hero page={page} />
         {page === "shop" ? (
           <>
-            <div className="discovery-strip">
-              <div className="wrap">
-                <span>
-                  <Icon name="spark" /> Pieces with personality
-                </span>
-                <span>
-                  <Icon name="heart" /> Chosen with intention
-                </span>
-                <span>
-                  <Icon name="bag" /> Finds for every kind of you
-                </span>
-              </div>
-            </div>
             <section
               className="catalog wrap"
               id="collection"
               aria-labelledby="catalog-title"
+              aria-busy={isFiltering || searchTerm !== deferredSearch}
             >
+              <h2 id="catalog-title" className="sr-only">
+                Shop handmade treasures
+              </h2>
               <div className="catalog-intro">
-                <div>
-                  <span className="eyebrow">The collection</span>
-                  <h2 id="catalog-title">
-                    Good things. <em>Great finds.</em>
-                  </h2>
-                  <p>A little unexpected. A lot to fall in love with.</p>
-                </div>
                 <SearchBar
                   searchTerm={searchTerm}
-                  onSearchChange={change(setSearchTerm)}
+                  onSearchChange={(value) => {
+                    setSearchTerm(value);
+                    setLimit(16);
+                  }}
                   onClearSearch={() => setSearchTerm("")}
                 />
               </div>
@@ -203,7 +163,7 @@ export default function App() {
               <ProductGrid
                 products={results.slice(0, limit)}
                 favorites={favorites}
-                onProductSelect={setSelectedProduct}
+                onProductSelect={selectProduct}
                 onToggleFavorite={toggleFavorite}
                 onAdd={addToBag}
                 onClear={clearFilters}
@@ -232,6 +192,26 @@ export default function App() {
                 </div>
               )}
             </section>
+            {recentProducts.length > 0 && (
+              <section
+                className="wrap recent-section"
+                aria-labelledby="recent-title"
+              >
+                <div className="recent-heading">
+                  <span className="eyebrow">A second look</span>
+                  <h2 id="recent-title">Still on your mind?</h2>
+                  <p>Your recently viewed treasures, saved in this browser.</p>
+                </div>
+                <ProductGrid
+                  products={recentProducts}
+                  favorites={favorites}
+                  onProductSelect={selectProduct}
+                  onToggleFavorite={toggleFavorite}
+                  onAdd={addToBag}
+                  onClear={clearFilters}
+                />
+              </section>
+            )}
             <section className="editorial">
               <div className="wrap editorial__inner">
                 <div>
@@ -308,18 +288,7 @@ export default function App() {
           isFavorite={favorites.includes(selectedProduct.id)}
         />
       )}
-      <Cart
-        open={cartOpen}
-        items={items}
-        onClose={() => setCartOpen(false)}
-        onQuantity={(id, quantity) =>
-          setBag((prev) =>
-            quantity <= 0
-              ? prev.filter((i) => i.id !== id)
-              : prev.map((i) => (i.id === id ? { ...i, quantity } : i)),
-          )
-        }
-      />
+      <Cart open={cartOpen} onClose={() => setCartOpen(false)} />
       <div
         className={`toast ${notice ? "toast--visible" : ""}`}
         role="status"
