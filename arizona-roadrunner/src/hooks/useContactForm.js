@@ -1,6 +1,8 @@
 import { useCallback, useId, useReducer, useRef } from "react";
 import emailjs from "@emailjs/browser";
 import useStoredState from "./useStoredState";
+
+
 const EMPTY = { from_name: "", reply_to: "", subject: "", message: "" };
 const valid = (value) =>
   value &&
@@ -47,9 +49,9 @@ export default function useContactForm() {
       if (!form.reportValidity()) return;
       const data = new FormData(form);
       if (String(data.get("website") || "").trim()) return;
-      const service = import.meta.env.VITE_EMAILJS_SERVICE_ID?.trim();
-      const template = import.meta.env.VITE_EMAILJS_TEMPLATE_ID?.trim();
-      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY?.trim();
+      const service='service_4fqwyle'
+      const template='template_jrj9cmp'
+      const publicKey='hQim4ICvqwKb9uuvj'
       if (!service || !template || !publicKey) {
         dispatch({
           type: "error",
